@@ -20,9 +20,6 @@ dependencies {
     testImplementation(libs.junit.jupiter)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    // This dependency is used by the application.
-    implementation(libs.guava)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -34,10 +31,15 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "interpreter.App"
+    mainClass = "interpreter.Main"
 }
 
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+tasks.named<JavaExec>("run") {
+    // Keyboard input for the text menu
+    standardInput = System.`in`
 }
