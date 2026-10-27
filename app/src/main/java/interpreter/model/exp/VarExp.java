@@ -17,4 +17,9 @@ public record VarExp(String id) implements IExp {
             throw new ExpressionException(e.getMessage());
         }
     }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }
