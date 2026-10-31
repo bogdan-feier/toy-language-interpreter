@@ -16,6 +16,8 @@ import interpreter.model.type.BoolType;
 import interpreter.model.type.IntType;
 import interpreter.model.value.BoolValue;
 import interpreter.model.value.IntValue;
+import interpreter.model.type.StringType;
+import interpreter.model.value.StringValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -129,5 +131,11 @@ class StmtTest {
         new NopStmt().execute(state);
         assertTrue(state.getExeStack().isEmpty());
         assertEquals(0, state.getOut().size());
+    }
+
+    @Test
+    void declaringAStringVariableGivesItTheEmptyString() throws MyException {
+        new VarDeclStmt("s", new StringType()).execute(state);
+        assertEquals(new StringValue(""), state.getSymTable().lookup("s"));
     }
 }
