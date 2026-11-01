@@ -5,9 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import interpreter.exceptions.MyException;
 import interpreter.exceptions.StatementException;
 import interpreter.model.PrgState;
-import interpreter.model.adt.MyDictionary;
-import interpreter.model.adt.MyList;
-import interpreter.model.adt.MyStack;
 import interpreter.model.stmt.CompStmt;
 import interpreter.model.stmt.IStmt;
 import interpreter.model.stmt.VarDeclStmt;
@@ -19,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 class ControllerTest {
     private static PrgState newState(IStmt program) {
-        return new PrgState(new MyStack<>(), new MyDictionary<>(), new MyList<>(), program);
+        return PrgState.of(program);
     }
 
     private static PrgState run(IStmt program) throws MyException {
@@ -61,8 +58,9 @@ class ControllerTest {
 
     @Test
     void errorInsideAProgramStopsExecutionWithAnException() {
-        IStmt declaredTwice = new CompStmt(new VarDeclStmt("v", new IntType()),
-                new VarDeclStmt("v", new IntType()));
+        IStmt declaredTwice =
+                new CompStmt(
+                        new VarDeclStmt("v", new IntType()), new VarDeclStmt("v", new IntType()));
         PrgState state = newState(declaredTwice);
         Controller controller = new Controller(new Repository(state), false);
         assertThrows(StatementException.class, controller::allStep);

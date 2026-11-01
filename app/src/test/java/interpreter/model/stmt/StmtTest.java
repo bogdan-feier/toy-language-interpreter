@@ -6,17 +6,14 @@ import interpreter.exceptions.ExpressionException;
 import interpreter.exceptions.MyException;
 import interpreter.exceptions.StatementException;
 import interpreter.model.PrgState;
-import interpreter.model.adt.MyDictionary;
-import interpreter.model.adt.MyList;
-import interpreter.model.adt.MyStack;
 import interpreter.model.exp.IExp;
 import interpreter.model.exp.ValueExp;
 import interpreter.model.exp.VarExp;
 import interpreter.model.type.BoolType;
 import interpreter.model.type.IntType;
+import interpreter.model.type.StringType;
 import interpreter.model.value.BoolValue;
 import interpreter.model.value.IntValue;
-import interpreter.model.type.StringType;
 import interpreter.model.value.StringValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +23,7 @@ class StmtTest {
 
     @BeforeEach
     void setUp() throws MyException {
-        state = new PrgState(new MyStack<>(), new MyDictionary<>(), new MyList<>(), new NopStmt());
+        state = PrgState.of(new NopStmt());
         state.getExeStack().pop();
     }
 
@@ -65,7 +62,8 @@ class StmtTest {
     @Test
     void assignWithTypeMismatchThrows() {
         state.getSymTable().put("v", new IntValue(0));
-        assertThrows(StatementException.class, () -> new AssignStmt("v", bool(true)).execute(state));
+        assertThrows(
+                StatementException.class, () -> new AssignStmt("v", bool(true)).execute(state));
     }
 
     // S3
@@ -84,7 +82,8 @@ class StmtTest {
     @Test
     void declaringTheSameVariableTwiceThrows() throws MyException {
         new VarDeclStmt("v", new IntType()).execute(state);
-        assertThrows(StatementException.class, () -> new VarDeclStmt("v", new IntType()).execute(state));
+        assertThrows(
+                StatementException.class, () -> new VarDeclStmt("v", new IntType()).execute(state));
     }
 
     // S4
@@ -98,7 +97,8 @@ class StmtTest {
 
     @Test
     void printOfUndefinedVariableThrows() {
-        assertThrows(ExpressionException.class, () -> new PrintStmt(new VarExp("x")).execute(state));
+        assertThrows(
+                ExpressionException.class, () -> new PrintStmt(new VarExp("x")).execute(state));
     }
 
     // S5
@@ -122,7 +122,9 @@ class StmtTest {
 
     @Test
     void ifWithNonBooleanConditionThrows() {
-        assertThrows(StatementException.class, () -> new IfStmt(num(1), new NopStmt(), new NopStmt()).execute(state));
+        assertThrows(
+                StatementException.class,
+                () -> new IfStmt(num(1), new NopStmt(), new NopStmt()).execute(state));
     }
 
     // S6
