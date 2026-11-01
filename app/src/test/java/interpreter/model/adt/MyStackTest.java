@@ -3,6 +3,7 @@ package interpreter.model.adt;
 import static org.junit.jupiter.api.Assertions.*;
 
 import interpreter.exceptions.ADTException;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,26 @@ class MyStackTest {
     void isEmptyReflectsContent() {
         assertTrue(stack.isEmpty());
         stack.push(1);
+        assertFalse(stack.isEmpty());
+    }
+
+    @Test
+    void toListHasTheTopFirst() {
+        stack.push(1);
+        stack.push(2);
+        stack.push(3);
+        assertEquals(List.of(3, 2, 1), stack.toList());
+    }
+
+    @Test
+    void toListOfEmptyStackIsEmpty() {
+        assertTrue(stack.toList().isEmpty());
+    }
+
+    @Test
+    void changingTheToListResultDoesNotChangeTheStack() {
+        stack.push(1);
+        stack.toList().clear();
         assertFalse(stack.isEmpty());
     }
 }
