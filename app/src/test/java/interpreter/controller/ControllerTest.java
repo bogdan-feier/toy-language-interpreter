@@ -12,16 +12,25 @@ import interpreter.model.type.IntType;
 import interpreter.model.value.IntValue;
 import interpreter.repository.Repository;
 import interpreter.view.Examples;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class ControllerTest {
-    private static PrgState newState(IStmt program) {
+    @TempDir Path dir;
+
+    private String logPath() {
+        return dir.resolve("log.txt").toString();
+    }
+
+    private PrgState newState(IStmt program) {
         return PrgState.of(program);
     }
 
-    private static PrgState run(IStmt program) throws MyException {
-        PrgState state = newState(program);
-        new Controller(new Repository(state), false).allStep();
+    private PrgState run(IStmt program) throws MyException {
+        PrgState state = PrgState.of(program);
+        new Controller(new Repository(state, logPath()), false).allStep();
         return state;
     }
 
@@ -52,7 +61,7 @@ class ControllerTest {
     void oneStepOnEmptyStackThrows() throws MyException {
         PrgState state = newState(Examples.EX1);
         state.getExeStack().pop();
-        Controller controller = new Controller(new Repository(state), false);
+        Controller controller = new Controller(new Repository(state, logPath()), false);
         assertThrows(StatementException.class, () -> controller.oneStep(state));
     }
 
@@ -62,7 +71,26 @@ class ControllerTest {
                 new CompStmt(
                         new VarDeclStmt("v", new IntType()), new VarDeclStmt("v", new IntType()));
         PrgState state = newState(declaredTwice);
-        Controller controller = new Controller(new Repository(state), false);
+        Controller controller = new Controller(new Repository(state, logPath()), false);
         assertThrows(StatementException.class, controller::allStep);
+    }
+
+    @Test
+    void logFileContainsTheFourSectionsInOrder() throws Exception {
+        run(Examples.EX1);
+        String log = Files.readString(dir.resolve("log.txt"));
+        int a = log.indexOf("ExeStack:");
+        int b = log.indexOf("SymTable:");
+        int c = log.indexOf("Out:");
+        int d = log.indexOf("FileTable:");
+        assertTrue(0 <= a && a < b && b < c && c < d);
+    }
+
+    @Test
+    void logFileHasTheInitialStateAndOneStateAfterEachStep() throws Exception {
+        run(Examples.EX1);
+        String log = Files.readString(dir.resolve("log.txt"));
+        assertEquals(6, log.split("ExeStack:", -1).length - 1);
+        assertTrue(log.contains("Out:\n2\n"));
     }
 }
