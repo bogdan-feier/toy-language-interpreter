@@ -50,8 +50,7 @@ class ArithExpTest {
 
     @Test
     void respectsOperatorPrecedenceEncodedInTheTree() throws MyException {
-        IExp e = new ArithExp(ArithOp.ADD, num(2),
-                new ArithExp(ArithOp.MUL, num(3), num(5)));
+        IExp e = new ArithExp(ArithOp.ADD, num(2), new ArithExp(ArithOp.MUL, num(3), num(5)));
         assertEquals(new IntValue(17), e.eval(symTable));
     }
 

@@ -1,7 +1,8 @@
 package interpreter.model.exp;
 
 public enum LogicOp {
-    AND("and"), OR("or");
+    AND("and"),
+    OR("or");
 
     private final String symbol;
 

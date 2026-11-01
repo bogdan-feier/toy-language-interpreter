@@ -1,7 +1,7 @@
 package interpreter.model.type;
 
-import interpreter.model.value.StringValue;
 import interpreter.model.value.IValue;
+import interpreter.model.value.StringValue;
 
 public record StringType() implements IType {
     @Override

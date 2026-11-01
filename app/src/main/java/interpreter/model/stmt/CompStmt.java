@@ -9,6 +9,7 @@ public record CompStmt(IStmt first, IStmt second) implements IStmt {
         state.getExeStack().push(first);
         return state;
     }
+
     @Override
     public String toString() {
         return "(" + first + "; " + second + ")";

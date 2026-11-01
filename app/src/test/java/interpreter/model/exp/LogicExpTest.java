@@ -26,18 +26,34 @@ class LogicExpTest {
 
     @Test
     void andTruthTable() throws MyException {
-        assertEquals(new BoolValue(true), new LogicExp(LogicOp.AND, bool(true), bool(true)).eval(symTable));
-        assertEquals(new BoolValue(false), new LogicExp(LogicOp.AND, bool(true), bool(false)).eval(symTable));
-        assertEquals(new BoolValue(false), new LogicExp(LogicOp.AND, bool(false), bool(true)).eval(symTable));
-        assertEquals(new BoolValue(false), new LogicExp(LogicOp.AND, bool(false), bool(false)).eval(symTable));
+        assertEquals(
+                new BoolValue(true),
+                new LogicExp(LogicOp.AND, bool(true), bool(true)).eval(symTable));
+        assertEquals(
+                new BoolValue(false),
+                new LogicExp(LogicOp.AND, bool(true), bool(false)).eval(symTable));
+        assertEquals(
+                new BoolValue(false),
+                new LogicExp(LogicOp.AND, bool(false), bool(true)).eval(symTable));
+        assertEquals(
+                new BoolValue(false),
+                new LogicExp(LogicOp.AND, bool(false), bool(false)).eval(symTable));
     }
 
     @Test
     void orTruthTable() throws MyException {
-        assertEquals(new BoolValue(true), new LogicExp(LogicOp.OR, bool(true), bool(false)).eval(symTable));
-        assertEquals(new BoolValue(true), new LogicExp(LogicOp.OR, bool(false), bool(true)).eval(symTable));
-        assertEquals(new BoolValue(true), new LogicExp(LogicOp.OR, bool(true), bool(true)).eval(symTable));
-        assertEquals(new BoolValue(false), new LogicExp(LogicOp.OR, bool(false), bool(false)).eval(symTable));
+        assertEquals(
+                new BoolValue(true),
+                new LogicExp(LogicOp.OR, bool(true), bool(false)).eval(symTable));
+        assertEquals(
+                new BoolValue(true),
+                new LogicExp(LogicOp.OR, bool(false), bool(true)).eval(symTable));
+        assertEquals(
+                new BoolValue(true),
+                new LogicExp(LogicOp.OR, bool(true), bool(true)).eval(symTable));
+        assertEquals(
+                new BoolValue(false),
+                new LogicExp(LogicOp.OR, bool(false), bool(false)).eval(symTable));
     }
 
     @Test

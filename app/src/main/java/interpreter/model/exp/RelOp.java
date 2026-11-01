@@ -1,7 +1,12 @@
 package interpreter.model.exp;
 
 public enum RelOp {
-    LT("<"), LE("<="), EQ("=="), NE("!="), GT(">"), GE(">=");
+    LT("<"),
+    LE("<="),
+    EQ("=="),
+    NE("!="),
+    GT(">"),
+    GE(">=");
 
     private final String symbol;
 

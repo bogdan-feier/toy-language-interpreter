@@ -8,7 +8,7 @@ public record IntValue(int value) implements IValue {
     public IType getType() {
         return new IntType();
     }
-    
+
     @Override
     public String toString() {
         return Integer.toString(value);

@@ -13,5 +13,4 @@ public record StringValue(String value) implements IValue {
     public String toString() {
         return "\"" + value + "\"";
     }
-
 }

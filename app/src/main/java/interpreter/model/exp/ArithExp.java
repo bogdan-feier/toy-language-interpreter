@@ -9,17 +9,20 @@ import interpreter.model.value.IntValue;
 public record ArithExp(ArithOp op, IExp left, IExp right) implements IExp {
     @Override
     public IValue eval(IDictionary<String, IValue> symTable) throws MyException {
-        if (!(left.eval(symTable) instanceof IntValue(int n1)))
+        if (!(left.eval(symTable) instanceof IntValue(int n1))) {
             throw new ExpressionException("first operand is not an integer");
-        if (!(right.eval(symTable) instanceof IntValue(int n2)))
+        }
+        if (!(right.eval(symTable) instanceof IntValue(int n2))) {
             throw new ExpressionException("second operand is not an integer");
+        }
         return switch (op) {
             case ADD -> new IntValue(n1 + n2);
             case SUB -> new IntValue(n1 - n2);
             case MUL -> new IntValue(n1 * n2);
             case DIV -> {
-                if (n2 == 0)
+                if (n2 == 0) {
                     throw new ExpressionException("division by zero");
+                }
                 yield new IntValue(n1 / n2);
             }
         };

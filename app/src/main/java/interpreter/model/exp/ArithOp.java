@@ -1,7 +1,10 @@
 package interpreter.model.exp;
 
 public enum ArithOp {
-    ADD("+"), SUB("-"), MUL("*"), DIV("/");
+    ADD("+"),
+    SUB("-"),
+    MUL("*"),
+    DIV("/");
 
     private final String symbol;
 

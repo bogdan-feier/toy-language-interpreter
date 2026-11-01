@@ -34,7 +34,8 @@ public class Controller {
     }
 
     private void display(PrgState prg) {
-        if (displayFlag)
+        if (displayFlag) {
             System.out.println(prg);
+        }
     }
 }
