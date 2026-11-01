@@ -1,81 +1,36 @@
 package interpreter.view;
 
-import interpreter.controller.Controller;
-import interpreter.exceptions.MyException;
-import interpreter.model.PrgState;
-import interpreter.model.stmt.IStmt;
-import interpreter.repository.Repository;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class TextMenu {
-    private final Scanner in = new Scanner(System.in);
-    private final List<IStmt> programs = List.of(Examples.EX1, Examples.EX2, Examples.EX3);
-    private IStmt selected = null;
+    private final Map<String, Command> commands = new LinkedHashMap<>();
 
-    public void run() {
-        while (true) {
-            printMenu();
-            String choice = readLine();
-            if (choice == null) {
-                return;
-            }
-            switch (choice.trim()) {
-                case "1" -> selectProgram();
-                case "2" -> runProgram();
-                case "0" -> {
-                    return;
-                }
-                default -> System.out.println("Invalid option.");
-            }
-        }
+    public void addCommand(Command c) {
+        commands.put(c.getKey(), c);
     }
 
     private void printMenu() {
-        System.out.println();
-        System.out.println("1. Select a program");
-        System.out.println("2. Run the selected program");
-        System.out.println("0. Exit");
-        System.out.print("Option: ");
+        for (Command c : commands.values()) {
+            System.out.printf("%4s : %s%n", c.getKey(), c.getDescription());
+        }
     }
 
-    private void selectProgram() {
-        for (int i = 0; i < programs.size(); i++) {
-            System.out.println((i + 1) + ". " + programs.get(i));
-        }
-        System.out.print("Program number: ");
-        String line = readLine();
-        if (line == null) {
-            return;
-        }
-        try {
-            int number = Integer.parseInt(line.trim());
-            if (number < 1 || number > programs.size()) {
-                System.out.println("There is no program " + number + ".");
+    public void show() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            printMenu();
+            System.out.print("Input the option: ");
+            if (!scanner.hasNextLine()) {
                 return;
             }
-            selected = programs.get(number - 1);
-            System.out.println("Selected: " + selected);
-        } catch (NumberFormatException e) {
-            System.out.println("Please type a number.");
+            Command c = commands.get(scanner.nextLine().strip());
+            if (c == null) {
+                System.out.println("Invalid option");
+                continue;
+            }
+            c.execute();
         }
-    }
-
-    private void runProgram() {
-        if (selected == null) {
-            System.out.println("Select a program first.");
-            return;
-        }
-        PrgState state = PrgState.of(selected);
-        Controller controller = new Controller(new Repository(state, "log.txt"), true);
-        try {
-            controller.allStep();
-        } catch (MyException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    private String readLine() {
-        return in.hasNextLine() ? in.nextLine() : null;
     }
 }
