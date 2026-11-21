@@ -5,15 +5,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import interpreter.exceptions.MyException;
 import interpreter.exceptions.StatementException;
 import interpreter.model.PrgState;
+import interpreter.model.exp.ValueExp;
 import interpreter.model.stmt.CompStmt;
 import interpreter.model.stmt.IStmt;
+import interpreter.model.stmt.NewStmt;
 import interpreter.model.stmt.VarDeclStmt;
 import interpreter.model.type.IntType;
+import interpreter.model.type.RefType;
 import interpreter.model.value.IntValue;
 import interpreter.repository.Repository;
 import interpreter.view.Examples;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -87,10 +91,10 @@ class ControllerTest {
     }
 
     @Test
-    void logFileHasTheInitialStateAndOneStateAfterEachStep() throws Exception {
+    void logFileHasTheInitialStateAndTwoStatesPerStep() throws Exception {
         run(Examples.EX1);
         String log = Files.readString(dir.resolve("log.txt"));
-        assertEquals(6, log.split("ExeStack:", -1).length - 1);
+        assertEquals(11, log.split("ExeStack:", -1).length - 1);
         assertTrue(log.contains("Out:\n2\n"));
     }
 
@@ -117,5 +121,19 @@ class ControllerTest {
     void example5PrintsFive() throws MyException {
         PrgState s = run(Examples.EX5);
         assertEquals(new IntValue(5), s.getOut().get(0));
+    }
+
+    @Test
+    void garbageCollectorRemovesALocationNoVariableReachesAnymore() throws MyException {
+        // Ref int v; new(v, 20); new(v, 30)
+        IStmt program =
+                new CompStmt(
+                        new VarDeclStmt("v", new RefType(new IntType())),
+                        new CompStmt(
+                                new NewStmt("v", new ValueExp(new IntValue(20))),
+                                new NewStmt("v", new ValueExp(new IntValue(30)))));
+        PrgState state = run(program);
+        assertEquals(Set.of(2), state.getHeap().getContent().keySet());
+        assertEquals(new IntValue(30), state.getHeap().get(2));
     }
 }
