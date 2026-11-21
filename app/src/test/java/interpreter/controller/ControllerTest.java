@@ -13,6 +13,7 @@ import interpreter.model.stmt.VarDeclStmt;
 import interpreter.model.type.IntType;
 import interpreter.model.type.RefType;
 import interpreter.model.value.IntValue;
+import interpreter.model.value.RefValue;
 import interpreter.repository.Repository;
 import interpreter.view.Examples;
 import java.nio.file.Files;
@@ -135,5 +136,48 @@ class ControllerTest {
         PrgState state = run(program);
         assertEquals(Set.of(2), state.getHeap().getContent().keySet());
         assertEquals(new IntValue(30), state.getHeap().get(2));
+    }
+
+    @Test
+    void example6LeavesTwoLocationsAndPrintsTwoReferences() throws MyException {
+        PrgState s = run(Examples.EX6);
+        assertEquals(new RefValue(1, new IntType()), s.getOut().get(0));
+        assertEquals(new RefValue(2, new RefType(new IntType())), s.getOut().get(1));
+        assertEquals(Set.of(1, 2), s.getHeap().getContent().keySet());
+        assertEquals(new IntValue(20), s.getHeap().get(1));
+        assertEquals(new RefValue(1, new IntType()), s.getHeap().get(2));
+    }
+
+    @Test
+    void example7Prints20And25() throws MyException {
+        PrgState s = run(Examples.EX7);
+        assertEquals(new IntValue(20), s.getOut().get(0));
+        assertEquals(new IntValue(25), s.getOut().get(1));
+    }
+
+    @Test
+    void example8Prints20And35AndChangesTheHeap() throws MyException {
+        PrgState s = run(Examples.EX8);
+        assertEquals(new IntValue(20), s.getOut().get(0));
+        assertEquals(new IntValue(35), s.getOut().get(1));
+        assertEquals(Set.of(1), s.getHeap().getContent().keySet());
+        assertEquals(new IntValue(30), s.getHeap().get(1));
+    }
+
+    @Test
+    void example9Prints20BecauseTheSafeCollectorKeepsLocationOne() throws MyException {
+        PrgState s = run(Examples.EX9);
+        assertEquals(1, s.getOut().size());
+        assertEquals(new IntValue(20), s.getOut().get(0));
+        assertEquals(Set.of(1, 2, 3), s.getHeap().getContent().keySet());
+    }
+
+    @Test
+    void example10CountsDownFromFourToZero() throws MyException {
+        PrgState s = run(Examples.EX10);
+        assertEquals(5, s.getOut().size());
+        for (int i = 0; i < 5; i++) {
+            assertEquals(new IntValue(4 - i), s.getOut().get(i));
+        }
     }
 }

@@ -4,6 +4,7 @@ import interpreter.model.exp.*;
 import interpreter.model.stmt.*;
 import interpreter.model.type.BoolType;
 import interpreter.model.type.IntType;
+import interpreter.model.type.RefType;
 import interpreter.model.type.StringType;
 import interpreter.model.value.BoolValue;
 import interpreter.model.value.IntValue;
@@ -106,4 +107,79 @@ public class Examples {
                                                             new VarExp("b")),
                                                     new PrintStmt(new VarExp("a")),
                                                     new PrintStmt(new VarExp("b")))))));
+
+    // seq(a, b, c) builds (a; (b; c)), the same tree as CompStmt(a, CompStmt(b, c))
+    private static IStmt seq(IStmt... stmts) {
+        IStmt result = stmts[stmts.length - 1];
+        for (int i = stmts.length - 2; i >= 0; i--) {
+            result = new CompStmt(stmts[i], result);
+        }
+        return result;
+    }
+
+    private static IExp num(int n) {
+        return new ValueExp(new IntValue(n));
+    }
+
+    private static IExp variable(String name) {
+        return new VarExp(name);
+    }
+
+    // Ex6: Ref int v; new(v, 20); Ref Ref int a; new(a, v); print(v); print(a)
+    public static final IStmt EX6 =
+            seq(
+                    new VarDeclStmt("v", new RefType(new IntType())),
+                    new NewStmt("v", num(20)),
+                    new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
+                    new NewStmt("a", variable("v")),
+                    new PrintStmt(variable("v")),
+                    new PrintStmt(variable("a")));
+
+    // Ex7: Ref int v; new(v, 20); Ref Ref int a; new(a, v); print(rH(v)); print(rH(rH(a)) + 5)
+    public static final IStmt EX7 =
+            seq(
+                    new VarDeclStmt("v", new RefType(new IntType())),
+                    new NewStmt("v", num(20)),
+                    new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
+                    new NewStmt("a", variable("v")),
+                    new PrintStmt(new ReadHeapExp(variable("v"))),
+                    new PrintStmt(
+                            new ArithExp(
+                                    ArithOp.ADD,
+                                    new ReadHeapExp(new ReadHeapExp(variable("a"))),
+                                    num(5))));
+
+    // Ex8: Ref int v; new(v, 20); print(rH(v)); wH(v, 30); print(rH(v) + 5)
+    public static final IStmt EX8 =
+            seq(
+                    new VarDeclStmt("v", new RefType(new IntType())),
+                    new NewStmt("v", num(20)),
+                    new PrintStmt(new ReadHeapExp(variable("v"))),
+                    new WriteHeapStmt("v", num(30)),
+                    new PrintStmt(
+                            new ArithExp(ArithOp.ADD, new ReadHeapExp(variable("v")), num(5))));
+
+    // Ex9: Ref int v; new(v, 20); Ref Ref int a; new(a, v); new(v, 30); print(rH(rH(a)))
+    public static final IStmt EX9 =
+            seq(
+                    new VarDeclStmt("v", new RefType(new IntType())),
+                    new NewStmt("v", num(20)),
+                    new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
+                    new NewStmt("a", variable("v")),
+                    new NewStmt("v", num(30)),
+                    new PrintStmt(new ReadHeapExp(new ReadHeapExp(variable("a")))));
+
+    // Ex10: int v; v = 4; (while (v > 0) (print(v); v = v - 1)); print(v)
+    public static final IStmt EX10 =
+            seq(
+                    new VarDeclStmt("v", new IntType()),
+                    new AssignStmt("v", num(4)),
+                    new WhileStmt(
+                            new RelationalExp(RelOp.GT, variable("v"), num(0)),
+                            seq(
+                                    new PrintStmt(variable("v")),
+                                    new AssignStmt(
+                                            "v",
+                                            new ArithExp(ArithOp.SUB, variable("v"), num(1))))),
+                    new PrintStmt(variable("v")));
 }
