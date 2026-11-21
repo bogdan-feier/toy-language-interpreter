@@ -1,18 +1,18 @@
 package interpreter.model;
 
 import interpreter.model.adt.IDictionary;
+import interpreter.model.adt.IHeap;
 import interpreter.model.adt.IList;
 import interpreter.model.adt.IStack;
 import interpreter.model.adt.MyDictionary;
+import interpreter.model.adt.MyHeap;
 import interpreter.model.adt.MyList;
 import interpreter.model.adt.MyStack;
 import interpreter.model.stmt.IStmt;
 import interpreter.model.value.IValue;
 import interpreter.model.value.StringValue;
-import interpreter.model.adt.IHeap;
-import interpreter.model.adt.MyHeap;
-import java.util.TreeMap;
 import java.io.BufferedReader;
+import java.util.TreeMap;
 
 public class PrgState {
     private IStack<IStmt> exeStack;
