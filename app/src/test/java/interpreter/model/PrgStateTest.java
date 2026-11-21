@@ -31,13 +31,13 @@ class PrgStateTest {
     }
 
     @Test
-    void toLogStringHasTheFourSectionsTopOfStackFirst() {
+    void toLogStringHasTheFiveSectionsTopOfStackFirst() {
         IStmt program = new NopStmt();
         PrgState state = PrgState.of(program);
         state.getSymTable().put("v", new IntValue(5));
         state.getOut().add(new IntValue(7));
         assertEquals(
-                "ExeStack:\n" + program + "\nSymTable:\nv --> 5\nOut:\n7\nFileTable:\n",
+                "ExeStack:\n" + program + "\nSymTable:\nv --> 5\nOut:\n7\nFileTable:\nHeap:\n",
                 state.toLogString());
     }
 
@@ -46,6 +46,19 @@ class PrgStateTest {
         PrgState state = PrgState.of(new NopStmt());
         state.getFileTable()
                 .put(new StringValue("test.in"), new BufferedReader(new StringReader("")));
-        assertTrue(state.toLogString().endsWith("FileTable:\ntest.in\n"));
+        assertTrue(state.toLogString().endsWith("FileTable:\ntest.in\nHeap:\n"));
+    }
+
+    @Test
+    void ofStartsWithAnEmptyHeap() {
+        assertTrue(PrgState.of(new NopStmt()).getHeap().getContent().isEmpty());
+    }
+
+    @Test
+    void toLogStringListsTheHeapSortedByAddress() {
+        PrgState state = PrgState.of(new NopStmt());
+        state.getHeap().allocate(new IntValue(20));
+        state.getHeap().allocate(new IntValue(30));
+        assertTrue(state.toLogString().endsWith("Heap:\n1 --> 20\n2 --> 30\n"));
     }
 }
