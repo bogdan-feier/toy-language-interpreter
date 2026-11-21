@@ -36,4 +36,35 @@ class GarbageCollectorTest {
         // 4 is real garbage, but 1 is lost too: a still reaches it through location 2
         assertEquals(Set.of(2, 3), kept.keySet());
     }
+
+    @Test
+    void safeCollectorKeepsTheLocationsReachableThroughTheHeap() {
+        Set<Integer> roots = GarbageCollector.getAddrFromSymTable(symTable);
+        Map<Integer, IValue> kept = GarbageCollector.safeGarbageCollector(roots, heap);
+        assertEquals(Set.of(1, 2, 3), kept.keySet()); // 4 is garbage, 1 is not
+    }
+
+    @Test
+    void reachableAddressesFollowsAChainOfReferences() {
+        Map<Integer, IValue> chain =
+                Map.of(
+                        1, new RefValue(2, new IntType()),
+                        2, new RefValue(3, new IntType()),
+                        3, new IntValue(5),
+                        4, new IntValue(9));
+        assertEquals(Set.of(1, 2, 3), GarbageCollector.reachableAddresses(Set.of(1), chain));
+    }
+
+    @Test
+    void reachableAddressesTerminatesOnACycle() {
+        Map<Integer, IValue> cycle =
+                Map.of(1, new RefValue(2, new IntType()), 2, new RefValue(1, new IntType()));
+        assertEquals(Set.of(1, 2), GarbageCollector.reachableAddresses(Set.of(1), cycle));
+    }
+
+    @Test
+    void theNullAddressKeepsNothing() {
+        Map<Integer, IValue> kept = GarbageCollector.safeGarbageCollector(Set.of(0), heap);
+        assertTrue(kept.isEmpty());
+    }
 }

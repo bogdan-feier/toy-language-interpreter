@@ -42,7 +42,8 @@ public class Controller {
         var heap = prg.getHeap();
         Set<Integer> roots =
                 GarbageCollector.getAddrFromSymTable(prg.getSymTable().toMap().values());
-        heap.setContent(GarbageCollector.unsafeGarbageCollector(roots, heap.getContent()));
+        // heap.setContent(GarbageCollector.unsafeGarbageCollector(roots, heap.getContent()));
+        heap.setContent(GarbageCollector.safeGarbageCollector(roots, heap.getContent()));
     }
 
     private void display(PrgState prg) {
